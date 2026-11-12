@@ -29,13 +29,24 @@
 
 ```bash
 pip install git+https://github.com/bumblebeers/dgg-latent.git
-# Or for local editable development:
-git clone https://github.com/bumblebeers/dgg-latent.git && cd dgg-latent && pip install -e .[test]
+```
+
+## Quickstart
+
+```python
+import torch
+from dgg_latent import DualReadoutSoftCanvasHead, install_dg_attn_fix, loss_hv
+
+install_dg_attn_fix()  # patches DiffusionGemmaEncoderModel prefill mask handling
+head = DualReadoutSoftCanvasHead(d_in=2816, d_bot=768, d_out=1152).eval()
+h_dec, e_soft, conf = torch.randn(2, 256, 2816), torch.randn(2, 256, 2816), torch.rand(2, 256, 1)
+pred_hv = head(h_dec, e_soft=e_soft, confidence=conf)  # -> (2, 256, 1152)
+loss = loss_hv(pred_hv, target_hv=torch.randn(2, 256, 1152))
 ```
 
 ## Related Resources
 
 - **Main Research & Benchmark Repository**: [bumblebeers/dgg2-latent-code-graphs](https://github.com/bumblebeers/dgg2-latent-code-graphs)
 - **Pretrained Adapters & ImageDecoder Weights**: [bumblebeer/dgg2-latent-code-graphs-adapters](https://huggingface.co/bumblebeer/dgg2-latent-code-graphs-adapters)
-- **AST Code-Graph Benchmark Packs**: [bumblebeer/dgg2-code-graph-benchmarks](https://huggingface.co/datasets/bumblebeer/dgg2-code-graph-benchmarks)
+- **AST Code-Graph Benchmark Packs & Raw Predictions**: [bumblebeer/dgg2-code-graph-benchmarks](https://huggingface.co/datasets/bumblebeer/dgg2-code-graph-benchmarks)
 - **License**: Apache-2.0
